@@ -16,17 +16,24 @@ import javax.swing.JFileChooser;
 public class UserInterface {
 
 	public static void main(String[] args) {
-		String[] rostersText = loadRosters();
 		DataConverter dc = new DataConverter();
+		
+		String[] rostersText = load("rosters");
 		dc.parseRosters(rostersText);
+		
+		String[] surveyData = load("survey data");
+		dc.parseSurveyData(surveyData);
 	}
 	
-	static String[] loadRosters() {
-		String[] lines = new String[10000]; // Capacity for up to 10,000 student-teacher pairs
+	static String[] load(String desc) {
+		String[] lines = null;
+		if ("rosters".equals(desc)) lines = new String[10000]; // Capacity for up to 10,000 student-teacher pairs
+		else if ("survey data".equals(desc)) lines = new String[500]; // Capacity for up to 500 teachers
+		
         BufferedReader reader;
 
         JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Please select the roster file");
+        chooser.setDialogTitle("Please select the " + desc + " file");
         int result = chooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = chooser.getSelectedFile();
@@ -51,7 +58,7 @@ public class UserInterface {
 	                return lines;
 	            } catch (IOException e) {
 	            	displayError(e.getMessage());
-	            	loadRosters();
+	            	load(desc);
 	            }
             }
         }

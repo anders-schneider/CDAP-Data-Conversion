@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class Student {
 
 	int id;
-	private HashMap<String, Integer> ratings; // Key: Subject | Value: Rating
+	private HashMap<String, HashMap<String, Integer>> ratings;
 	int lastInClassID; // Holds on to this information to be stored in its Teacher
 	
 	/**
@@ -23,7 +23,50 @@ public class Student {
 	 */
 	public Student(int id) {
 		this.id = id;
-		ratings = new HashMap<String, Integer>();
+		ratings = new HashMap<String, HashMap<String, Integer>>();
+	}
+	
+	/**
+	 * Sets the rating for this student for the input character habit
+	 * and subject. If the student already has a rating for this habit-
+	 * subject combination, then that previous rating is averaged with
+	 * the input rating to give a new rating, which is stored. This
+	 * reflects the assumption that a student will have no more than two
+	 * teachers for any given subject.
+	 * 
+	 * @param habit A character habit
+	 * @param subject A subject
+	 * @param rating The student's individual rating for this habit and subject
+	 */
+	public void setRating(String habit, String subject, int rating) {
+		HashMap<String, Integer> ratingsByHabit;
+		
+		if (ratings.containsKey(habit)) ratingsByHabit = ratings.get(habit);
+		else {
+			ratingsByHabit = new HashMap<String, Integer>();
+			ratings.put(habit, ratingsByHabit);
+		}
+		
+		if (ratingsByHabit.containsKey(subject)) {
+			rating = (rating + ratingsByHabit.get(subject)) / 2;
+		}
+		
+		ratingsByHabit.put(subject, rating);
+	}
+	
+	/**
+	 * Returns the rating for this student for the input character habit
+	 * and subject. If this student does not have a rating for the
+	 * character habit-subject combination, returns <code>-1</code>.
+	 * 
+	 * @param habit A character habit
+	 * @param subject A subject
+	 * @return The student's rating for the input habit and subject
+	 */
+	public Integer getRating(String habit, String subject) {
+		if (!ratings.containsKey(habit)) return -1;
+		if (!ratings.get(habit).containsKey(subject)) return -1;
+		return ratings.get(habit).get(subject);
 	}
 
 	@Override

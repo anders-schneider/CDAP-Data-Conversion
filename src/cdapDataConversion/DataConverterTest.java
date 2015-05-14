@@ -123,5 +123,66 @@ public class DataConverterTest {
 		assertEquals(andy, t2.getStudent(17));
 		assertEquals(alisa, t2.getStudent(0));
 	}
+	
+	@Test
+	public void testExtractHabit() {
+		String header1 = "Grit (Page 1) /    / Finishes whatever he/she begins /   /  Works very hard and keeps working when others...-${e://Field/Student1}";
+		String header2 = "Self-Control Work (Page /  1) /    / Came to class prepared. /   /  Followed directions. /   /  Got to work rig...-${e://Field/Student8}";
+		String header3 = "Self-Control Interpersonal (Page /  1) /    / Stayed calm even when others bothered or criticized her/h...-${e://Field/Student16}";
+		
+		DataConverter dc = new DataConverter();
+		
+		assertEquals("Grit", dc.extractHabit(header1));
+		assertEquals("Self-Control Work", dc.extractHabit(header2));
+		assertEquals("Self-Control Interpersonal", dc.extractHabit(header3));
+	}
+	
+	@Test
+	public void testExtractClassID() {
+		String header1 = "Grit (Page 1) /    / Finishes whatever he/she begins /   /  Works very hard and keeps working when others...-${e://Field/Student1}";
+		String header2 = "Self-Control Work (Page /  1) /    / Came to class prepared. /   /  Followed directions. /   /  Got to work rig...-${e://Field/Student8}";
+		String header3 = "Self-Control Interpersonal (Page /  1) /    / Stayed calm even when others bothered or criticized her/h...-${e://Field/Student16}";
+		
+		DataConverter dc = new DataConverter();
+		
+		assertEquals(1, dc.extractClassID(header1));
+		assertEquals(8, dc.extractClassID(header2));
+		assertEquals(16, dc.extractClassID(header3));
+	}
+	
+	@Test
+	public void testParseHeaders() {
+		String header0 = "Name";
+		String header1 = "Subject";
+		String header2 = "Grit (Page 1) /    / Finishes whatever he/she begins /   /  Works very hard and keeps working when others...-${e://Field/Student1}";
+		String header3 = "Self-Control Work (Page /  1) /    / Came to class prepared. /   /  Followed directions. /   /  Got to work rig...-${e://Field/Student8}";
+		String header4 = "Self-Control Interpersonal (Page /  1) /    / Stayed calm even when others bothered or criticized her/h...-${e://Field/Student16}";
 
+		String fullHeader = header0 + "," + header1 + "," + header2 + "," + header3 + "," + header4;
+		
+		DataConverter dc = new DataConverter();
+		
+		dc.parseHeaders(fullHeader);
+		
+		assertEquals(5, dc.classIDMap.length);
+		assertEquals(5, dc.habitMap.length);
+		
+		String[] expectedHabits = {null, null, "Grit", "Self-Control Work", "Self-Control Interpersonal"};
+		int[] expectedClassIDs = {0, 0, 1, 8, 16};
+		
+		assertArrayEquals(expectedHabits, dc.habitMap);
+		assertArrayEquals(expectedClassIDs, dc.classIDMap);
+	}
+	
+	@Test
+	public void testParseDataLine() {
+		//TODO Implement parseDataLine test
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testParseData() {
+		//TODO Implement parseData test
+		fail("Not yet implemented");
+	}
 }

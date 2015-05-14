@@ -3,6 +3,7 @@ package cdapDataConversion;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.MissingFormatArgumentException;
 
 /**
  * This program was written exclusively for the Duckworth Lab at UPenn
@@ -21,9 +22,145 @@ public class DataConverter {
 	HashMap<Integer, Student> students;
 	HashMap<String, Teacher> teachers;
 	
+	String[] habitMap;
+	int[] classIDMap;
+	
+	/**
+	 * Constructor for the DataConverter type.
+	 */
 	public DataConverter() {
 		students = new HashMap<Integer, Student>();
 		teachers = new HashMap<String, Teacher>();
+	}
+	
+	/**
+	 * Parses the survey data and gives each student a rating for the 
+	 * appropriate class and the appropriate character habit.
+	 * 
+	 * @param surveyData An array of CSV strings with raw survey data
+	 */
+	public void parseSurveyData(String[] surveyData) {
+		parseHeaders(surveyData[0]);
+		
+		for (int i = 1; i < surveyData.length; i++) {
+			if (surveyData[i] == null) break;
+			parseDataLine(surveyData[i]);
+		}
+	}
+	
+	/**
+	 * Parses an individual line of the survey data and stores the
+	 * information.
+	 * 
+	 * @param line A line of the survey data
+	 */
+	void parseDataLine(String line) {
+		//TODO Comment new code
+		
+		int start, stop;
+		
+		if (line.charAt(0) != '"') throw new MissingFormatArgumentException("Was expecting \"Teacher name\", ...");
+		
+		start = 1;
+		stop = start;
+		
+		while (line.charAt(stop) != '"') stop++;
+		String teacherName = line.substring(start, stop);
+		
+		if (!teachers.containsKey(teacherName)) throw new IllegalArgumentException("The following teacher was not included in the rosters: " + teacherName);
+		Teacher teacher = teachers.get(teacherName);
+		
+		start = stop;
+		while (line.charAt(start) != ',') start++;
+		start++;
+		
+		stop = start;
+		while (line.charAt(stop) != ',') stop++;
+		
+		String subject = line.substring(start, stop);
+		teacher.subject = subject;
+		
+		start = ++stop;
+		String[] data = line.substring(start, line.length()).split(",");
+		
+		parseData(data, teacher);
+	}
+	
+	/**
+	 * Stores the data contained in the input array of strings for each
+	 * student.
+	 * 
+	 * @param data The columns of the survey data for one row
+	 * @param teacher The teacher to whom this row corresponds
+	 */
+	void parseData(String[] data, Teacher teacher) {
+		for (int i = 0; i < data.length; i++) {
+			
+			if ("".equals(data[i])) continue;
+			
+			String habit = habitMap[i];
+			
+			int inClassID = classIDMap[i];
+			Student student = teacher.getStudent(inClassID);
+			
+			int rating = Integer.parseInt(data[i]);
+			
+			student.setRating(habit, teacher.subject, rating);
+		}
+	}
+	
+	/**
+	 * Stores information about each section of the header line to be used
+	 * when parsing the subsequent lines.
+	 * 
+	 * @param line A String representing the header line
+	 */
+	void parseHeaders(String line) {		
+		// Divide the CSV string into sections
+		String[] headers = line.split(",");
+		
+		habitMap = new String[headers.length - 2];
+		classIDMap = new int[headers.length - 2];
+		
+		for (int i = 2; i < headers.length; i++) {
+			// Fill the habitMap array with corresponding character habits
+			habitMap[i - 2] = extractHabit(headers[i]);
+			
+			// Fill the classIDMap array with corresponding in-class IDs
+			classIDMap[i - 2] = extractClassID(headers[i]);
+		}
+	}
+	
+	/**
+	 * Returns the character habit (as a String) embedded in this section
+	 * of the header line
+	 * 
+	 * @param header A string representing the header of a single column
+	 * @return The character habit to which this column refers
+	 */
+	String extractHabit(String header) {
+		int stop = 0;
+		
+		while (header.charAt(stop) != '(') stop++;
+		
+		return header.substring(0, stop).trim();
+	}
+	
+	/**
+	 * Returns the in-class ID (as an int) embedded in this section of
+	 * the header line
+	 * 
+	 * @param header A string representing the header of a single column
+	 * @return The in-class ID to which this column refers
+	 */
+	int extractClassID(String header) {
+		int stop = header.length() - 1;
+		int start = stop;
+		
+		while (header.charAt(start) != 't') start--;
+		start++;
+		
+		return Integer.parseInt(header.substring(start, stop));
 	}
 	
 	/**
