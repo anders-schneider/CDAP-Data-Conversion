@@ -29,8 +29,16 @@ public class Teacher {
 		students.put(inClassID, student);
 	}
 	
+	/**
+	 * Returns the Student object corresponding to the input in-class ID, or
+	 * returns <code>null</code> if this teacher does not teach that student
+	 * 
+	 * @param inClassID The class-specific ID number for the desired student
+	 * @return The student with that in-class ID, or <code>null</code> if they do not exist
+	 */
 	public Student getStudent(int inClassID) {
-		//TODO Implement getStudent method
+		if (students.containsKey(inClassID)) return students.get(inClassID);
+		else return null;
 	}
 	
 	@Override

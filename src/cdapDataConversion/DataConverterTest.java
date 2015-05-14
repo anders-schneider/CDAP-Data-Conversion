@@ -13,14 +13,57 @@ public class DataConverterTest {
 
 	@Test
 	public void testParseRosters() {
-		//TODO Implement parseRosters test
-		fail("Not yet implemented");
+		String line1 = "Teacher,Student";
+		String line2 = "\"Shoemaker, Kimberly Crandall\",\"Student1,5115   Abdullah-Tucker, Ahmad\"";
+		String line3 = "\"Shoemaker, Kimberly Crandall\",\"Student2,5062   Amaya, Tatiana\"";
+		String line4 = "\"Shoemaker, Kimberly Crandall\",\"Student3,5063   Artis, Makeda\"";
+		String line5 = "\"Shoemaker, Daniel Hecht\",\"Student62,5063   Artis, Makeda\"";
+		
+		String[] rostersText = {line1, line2, line3, line4, line5};
+		
+		DataConverter dc = new DataConverter();
+		dc.parseRosters(rostersText);
+		
+		assertEquals(2, dc.teachers.size());
+		assertEquals(3, dc.students.size());
+		
+		assertTrue(dc.teachers.containsKey("Shoemaker, Kimberly Crandall"));
+		assertTrue(dc.teachers.containsKey("Shoemaker, Daniel Hecht"));
+		
+		Teacher t1 = dc.teachers.get("Shoemaker, Kimberly Crandall");
+		Teacher t2 = dc.teachers.get("Shoemaker, Daniel Hecht");
+		
+		assertNotNull(t1.getStudent(3));
+		assertNotNull(t2.getStudent(62));
+		assertEquals(t1.getStudent(3), t2.getStudent(62));
 	}
 
 	@Test
 	public void testParseRosterLine() {
-		//TODO Implement parseRosterLine test
-		fail("Not yet implemented");
+		String line1 = "\"Shoemaker, Kimberly Crandall\",\"Student1,5115   Abdullah-Tucker, Ahmad\"";
+		String line2 = "\"Shoemaker, Kimberly Crandall\",\"Student2,5062   Amaya, Tatiana\"";
+		String line3 = "\"Shoemaker, Daniel Hecht\",\"Student1,5033   Basiege, Jayen\"";
+		
+		DataConverter dc = new DataConverter();
+		
+		dc.parseRosterLine(line1);
+		assertTrue(dc.teachers.containsKey("Shoemaker, Kimberly Crandall"));
+		
+		Teacher t1 = dc.teachers.get("Shoemaker, Kimberly Crandall");
+		assertNotNull(t1.getStudent(1));
+		
+		Student ahmad = t1.getStudent(1);
+		assertEquals(5115, ahmad.id);
+		
+		dc.parseRosterLine(line2);
+		dc.parseRosterLine(line3);
+		
+		assertEquals(2, dc.teachers.size());
+		
+		assertNotNull(t1.getStudent(2));
+		
+		Student tatiana = t1.getStudent(2);
+		assertEquals(5062, tatiana.id);
 	}
 
 	@Test
@@ -61,13 +104,24 @@ public class DataConverterTest {
 		
 		String line1 = "Shoemaker, Daniel Hecht";
 		String line2 = "Pickett, Alisa Yu";
-		String line3 = "Shoemaker, Kimberly Crandall";
 		
 		dc.parseTeacher(line1, ahmad);
 		
 		assertTrue(dc.teachers.containsKey(line1));
 		
-		//TODO Finish testing parseTeacher method
+		Teacher t1 = dc.teachers.get(line1);
+		assertEquals(ahmad, t1.getStudent(1));
+		assertEquals(line1, t1.name);
+		assertNull(t1.getStudent(2));
+		
+		dc.parseTeacher(line2, andy);
+		dc.parseTeacher(line2, alisa);
+		
+		assertEquals(2, dc.teachers.size());
+		
+		Teacher t2 = dc.teachers.get(line2);
+		assertEquals(andy, t2.getStudent(17));
+		assertEquals(alisa, t2.getStudent(0));
 	}
 
 }

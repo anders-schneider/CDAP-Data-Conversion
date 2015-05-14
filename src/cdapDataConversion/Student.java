@@ -30,4 +30,11 @@ public class Student {
 	public String toString() {
 		return "" + id;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Student)) return false;
+		Student other = (Student) o;
+		return this.id == other.id;
+	}
 }
