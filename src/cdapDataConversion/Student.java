@@ -10,7 +10,7 @@ import java.util.HashMap;
  * @author Anders Schneider
  *
  */
-public class Student {
+public class Student implements Comparable {
 
 	int id;
 	private HashMap<String, HashMap<String, Integer>> ratings;
@@ -79,5 +79,11 @@ public class Student {
 		if (!(o instanceof Student)) return false;
 		Student other = (Student) o;
 		return this.id == other.id;
+	}
+
+	@Override
+	public int compareTo(Object arg0) {
+		Student other = (Student) arg0;
+		return this.id - other.id;
 	}
 }

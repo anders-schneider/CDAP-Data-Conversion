@@ -343,4 +343,74 @@ public class DataConverterTest {
 		assertEquals(-1, dc.students.get(5063).getRating("Optimism", "History"));
 		assertEquals(-1, dc.students.get(5063).getRating("Optimism", "Science"));
 	}
+	
+	@Test
+	public void testGenerateHeader(){
+		DataConverter dc = new DataConverter();
+		
+		String[] habitArr = {"Grit", "Gratitude"};
+		String[] subjArr = {"Science", "History", "Math"};
+		
+		String expected = "Student ID,Grit-Science,Grit-History,Grit-Math,"
+							+ "Gratitude-Science,Gratitude-History,Gratitude-Math";
+		
+		assertEquals(expected, dc.generateHeader(habitArr, subjArr));
+	}
+	
+	@Test
+	public void testGenerateStudentLine(){
+		DataConverter dc = new DataConverter();
+		
+		String[] habitArr = {"Grit", "Gratitude"};
+		String[] subjArr = {"Science", "History", "Math"};
+		
+		Student s1 = new Student(1234);
+		s1.setRating("Grit", "Science", 3);
+		s1.setRating("Grit", "History", 4);
+		s1.setRating("Grit", "Math", 2);
+		s1.setRating("Gratitude", "Math", 1);
+		
+		String expected = "1234,3,4,2,,,1";
+		
+		assertEquals(expected, dc.generateStudentLine(s1, habitArr, subjArr));
+	}
+	
+	@Test
+	public void testGenerateOutput(){
+		DataConverter dc = new DataConverter();
+		
+		dc.habits.add("Gratitude");
+		dc.habits.add("Grit");
+		
+		dc.subjects.add("Science");
+		dc.subjects.add("History");
+		dc.subjects.add("Math");
+		
+		String header = "Student ID,Gratitude-Science,Gratitude-History,Gratitude-Math,"
+				+ "Grit-Science,Grit-History,Grit-Math";
+		
+		Student s1 = new Student(1234);
+		s1.setRating("Grit", "Science", 3);
+		s1.setRating("Grit", "History", 4);
+		s1.setRating("Grit", "Math", 2);
+		s1.setRating("Gratitude", "Math", 1);
+		
+		String line1 = "1234,,,1,3,4,2";
+		
+		dc.students.put(1234, s1);
+		
+		Student s2 = new Student(2345);
+		s2.setRating("Grit", "History", 5);
+		s2.setRating("Grit", "Science", 5);
+		s2.setRating("Gratitude", "Math", 5);
+		s2.setRating("Gratitude", "Science", 5);
+		
+		String line2 = "2345,5,,5,5,5,";
+		
+		dc.students.put(2345, s2);
+		
+		String[] expected = {header, line1, line2};
+		
+		assertArrayEquals(expected, dc.generateOutput());
+	}
 }

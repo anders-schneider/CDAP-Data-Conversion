@@ -1,9 +1,13 @@
 package cdapDataConversion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.MissingFormatArgumentException;
+import java.util.Set;
 
 /**
  * This program was written exclusively for the Duckworth Lab at UPenn
@@ -22,6 +26,9 @@ public class DataConverter {
 	HashMap<Integer, Student> students;
 	HashMap<String, Teacher> teachers;
 	
+	HashSet<String> habits;
+	HashSet<String> subjects;
+	
 	String[] habitMap;
 	int[] classIDMap;
 	
@@ -31,6 +38,9 @@ public class DataConverter {
 	public DataConverter() {
 		students = new HashMap<Integer, Student>();
 		teachers = new HashMap<String, Teacher>();
+		
+		habits = new HashSet<String>();
+		subjects = new HashSet<String>();
 	}
 	
 	/**
@@ -81,6 +91,9 @@ public class DataConverter {
 		// Find the subject, which is enclosed by commas
 		String subject = line.substring(start, stop);
 		
+		// Add the subject to the set of subjects (if not there already)
+		if (!subjects.contains(subject)) subjects.add(subject);
+		
 		// Set the subject field in this teacher
 		teacher.subject = subject;
 		
@@ -105,6 +118,9 @@ public class DataConverter {
 			
 			// Use the habitMap to retrieve the character habit for this column
 			String habit = habitMap[i];
+			
+			// If the habit is not in the set of habits already, add it
+			if (!habits.contains(habit)) habits.add(habit);
 			
 			// Use the in-class ID map to retrieve the correct student for this column
 			int inClassID = classIDMap[i];
@@ -279,6 +295,82 @@ public class DataConverter {
 	 * @return An array of CSV strings representing the aggregated results
 	 */
 	String[] generateOutput() {
-		return null;
+		String[] result = new String[students.size() + 1];
+		
+		// Ordered arrays of the character habits and subjects
+		String[] habitArr = habits.toArray(new String[1]);
+		String[] subjArr = subjects.toArray(new String[1]);
+		
+		// Generate the first line of the output
+		String header = generateHeader(habitArr, subjArr);
+		result[0] = header;
+		
+		// An array of all the students, sorted by Student ID
+		Student[] studentArr = students.values().toArray(new Student[1]);
+		Arrays.sort(studentArr);
+		
+		for (int i = 0; i < studentArr.length; i++) {
+			String nextLine = generateStudentLine(studentArr[i], habitArr, subjArr);
+			result[i + 1] = nextLine;
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Returns the first line of the output file, with all of the headers of
+	 * all of the columns.
+	 * 
+	 * @param habitArr An array of all of the character habits
+	 * @param subjArr An array of all of the subjects
+	 * @return A string with the first line of the output file
+	 */
+	String generateHeader(String[] habitArr, String[] subjArr) {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("Student ID");
+		
+		for (int i = 0; i < habitArr.length; i++) {
+			String habit = habitArr[i];
+			for (int j = 0; j < subjArr.length; j++) {
+				String subj = subjArr[j];
+				
+				// Each column header has the format "Habit-Subject"
+				sb.append("," + habit + "-" + subj);
+			}
+		}
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * Returns the line corresponding to the input student, with all of the
+	 * student's ratings for all of the different subjects and character
+	 * habits.
+	 * 
+	 * @param student The student to which this line corresponds
+	 * @param habitArr An array of all of the character habits
+	 * @param subjArr An array of all of the subjects
+	 * @return A line containing the ratings for this particular student
+	 */
+	String generateStudentLine(Student student, String[] habitArr, String[] subjArr) {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(student.id);
+		
+		for (int i = 0; i < habitArr.length; i++) {
+			String habit = habitArr[i];
+			for (int j = 0; j < subjArr.length; j++) {
+				sb.append(",");
+				
+				String subj = subjArr[j];
+				int rating = student.getRating(habit, subj);
+				
+				// If the student has a rating, append it (otherwise, leave a blank space)
+				if (rating != -1) sb.append(rating);
+			}
+		}
+		
+		return sb.toString();
 	}
 }

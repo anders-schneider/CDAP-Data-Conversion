@@ -24,7 +24,7 @@ public class UserInterface {
 		String[] surveyData = load("survey data");
 		dc.parseSurveyData(surveyData);
 		
-		String[] dc.generateOutput();
+		String[] output = dc.generateOutput();
 	}
 	
 	static String[] load(String desc) {
