@@ -63,7 +63,7 @@ public class Student {
 	 * @param subject A subject
 	 * @return The student's rating for the input habit and subject
 	 */
-	public Integer getRating(String habit, String subject) {
+	public int getRating(String habit, String subject) {
 		if (!ratings.containsKey(habit)) return -1;
 		if (!ratings.get(habit).containsKey(subject)) return -1;
 		return ratings.get(habit).get(subject);

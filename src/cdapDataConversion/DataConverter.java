@@ -55,7 +55,6 @@ public class DataConverter {
 	 * @param line A line of the survey data
 	 */
 	void parseDataLine(String line) {
-		//TODO Comment new code
 		
 		int start, stop;
 		
@@ -64,9 +63,11 @@ public class DataConverter {
 		start = 1;
 		stop = start;
 		
+		// Find the teacher name, which is enclosed by double quotes
 		while (line.charAt(stop) != '"') stop++;
 		String teacherName = line.substring(start, stop);
 		
+		// Retrieve the specified teacher
 		if (!teachers.containsKey(teacherName)) throw new IllegalArgumentException("The following teacher was not included in the rosters: " + teacherName);
 		Teacher teacher = teachers.get(teacherName);
 		
@@ -77,9 +78,13 @@ public class DataConverter {
 		stop = start;
 		while (line.charAt(stop) != ',') stop++;
 		
+		// Find the subject, which is enclosed by commas
 		String subject = line.substring(start, stop);
+		
+		// Set the subject field in this teacher
 		teacher.subject = subject;
 		
+		// Split all of the rest of the data into its separate columns
 		start = ++stop;
 		String[] data = line.substring(start, line.length()).split(",");
 		
@@ -96,10 +101,12 @@ public class DataConverter {
 	void parseData(String[] data, Teacher teacher) {
 		for (int i = 0; i < data.length; i++) {
 			
-			if ("".equals(data[i])) continue;
+			if ("".equals(data[i])) continue; // Skip blank columns
 			
+			// Use the habitMap to retrieve the character habit for this column
 			String habit = habitMap[i];
 			
+			// Use the in-class ID map to retrieve the correct student for this column
 			int inClassID = classIDMap[i];
 			Student student = teacher.getStudent(inClassID);
 			
