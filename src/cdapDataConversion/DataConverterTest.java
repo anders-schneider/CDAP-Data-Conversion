@@ -164,25 +164,183 @@ public class DataConverterTest {
 		
 		dc.parseHeaders(fullHeader);
 		
-		assertEquals(5, dc.classIDMap.length);
-		assertEquals(5, dc.habitMap.length);
+		assertEquals(3, dc.classIDMap.length);
+		assertEquals(3, dc.habitMap.length);
 		
-		String[] expectedHabits = {null, null, "Grit", "Self-Control Work", "Self-Control Interpersonal"};
-		int[] expectedClassIDs = {0, 0, 1, 8, 16};
+		String[] expectedHabits = {"Grit", "Self-Control Work", "Self-Control Interpersonal"};
+		int[] expectedClassIDs = {1, 8, 16};
 		
 		assertArrayEquals(expectedHabits, dc.habitMap);
 		assertArrayEquals(expectedClassIDs, dc.classIDMap);
 	}
 	
 	@Test
+	public void testParseSurveyData() {
+		String line1 = "Teacher,Student";
+		String line2 = "\"Shoemaker, Kimberly Crandall\",\"Student1,5115   Abdullah-Tucker, Ahmad\"";
+		String line3 = "\"Shoemaker, Kimberly Crandall\",\"Student2,5062   Amaya, Tatiana\"";
+		String line4 = "\"Shoemaker, Kimberly Crandall\",\"Student3,5063   Artis, Makeda\"";
+		String line5 = "\"Shoemaker, Daniel Hecht\",\"Student62,5063   Artis, Makeda\"";
+		
+		String[] rostersText = {line1, line2, line3, line4, line5};
+		
+		DataConverter dc = new DataConverter();
+		dc.parseRosters(rostersText);
+		
+		String h0 = "Name";
+		String h1 = "Subject";
+		String h2 = "Grit (Page 1) /    / Finishes whatever he/she begins /   /  Works very hard and keeps working when others...-${e://Field/Student2}";
+		String h3 = "Grit (Page 1) /    / Finishes whatever he/she begins /   /  Works very hard and keeps working when others...-${e://Field/Student3}";
+		String h4 = "Grit (Page 1) /    / Finishes whatever he/she begins /   /  Works very hard and keeps working when others...-${e://Field/Student62}";
+		String h5 = "Grit (Page 1) /    / Finishes whatever he/she begins /   /  Works very hard and keeps working when others...-${e://Field/Student1}";
+		String h6 = "Gratitude (Page 3) /    / Appreciated when other people helped her/him. /   /  Showed that s/he cared and...-${e://Field/Student2}";
+		String h7 = "Gratitude (Page 3) /    / Appreciated when other people helped her/him. /   /  Showed that s/he cared and...-${e://Field/Student3}";
+		String h8 = "Gratitude (Page 3) /    / Appreciated when other people helped her/him. /   /  Showed that s/he cared and...-${e://Field/Student62}";
+		String h9 = "Gratitude (Page 3) /    / Appreciated when other people helped her/him. /   /  Showed that s/he cared and...-${e://Field/Student1}";
+		
+		String fullHeader = h0 + "," + h1 + "," + h2 + "," + h3 + "," + h4 + "," + h5 + "," + h6 + "," + h7 + "," + h8 + "," + h9;
+		
+		String dataLine1 = "\"Shoemaker, Kimberly Crandall\",History,3,4,,1,5,,,2";
+		String dataLine2 = "\"Shoemaker, Daniel Hecht\",Science,,,1,,,,2,";
+		
+		String[] surveyData = {fullHeader, dataLine1, null, dataLine2, null};
+		
+		assertEquals(-1, dc.students.get(5115).getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get(5115).getRating("Gratitude", "History"));
+		assertEquals(-1, dc.students.get(5115).getRating("Gratitude", "Science"));
+		
+		assertEquals(-1, dc.students.get(5062).getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get(5062).getRating("Gratitude", "History"));
+		assertEquals(-1, dc.students.get(5062).getRating("Gratitude", "Science"));
+		
+		assertEquals(-1, dc.students.get(5063).getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get(5063).getRating("Gratitude", "History"));
+		assertEquals(-1, dc.students.get(5063).getRating("Grit", "Science"));
+		assertEquals(-1, dc.students.get(5063).getRating("Gratitude", "Science"));
+		
+		dc.parseSurveyData(surveyData);
+		
+		assertEquals(1, dc.students.get(5115).getRating("Grit", "History"));
+		assertEquals(2, dc.students.get(5115).getRating("Gratitude", "History"));
+		assertEquals(-1, dc.students.get(5115).getRating("Gratitude", "Science"));
+		
+		assertEquals(3, dc.students.get(5062).getRating("Grit", "History"));
+		assertEquals(5, dc.students.get(5062).getRating("Gratitude", "History"));
+		assertEquals(-1, dc.students.get(5062).getRating("Gratitude", "Science"));
+		
+		assertEquals(4, dc.students.get(5063).getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get(5063).getRating("Gratitude", "History"));
+		assertEquals(1, dc.students.get(5063).getRating("Grit", "Science"));
+		assertEquals(2, dc.students.get(5063).getRating("Gratitude", "Science"));
+	}
+	
+	@Test
 	public void testParseDataLine() {
-		//TODO Implement parseDataLine test
-		fail("Not yet implemented");
+		String line1 = "Teacher,Student";
+		String line2 = "\"Shoemaker, Kimberly Crandall\",\"Student1,5115   Abdullah-Tucker, Ahmad\"";
+		String line3 = "\"Shoemaker, Kimberly Crandall\",\"Student2,5062   Amaya, Tatiana\"";
+		String line4 = "\"Shoemaker, Kimberly Crandall\",\"Student3,5063   Artis, Makeda\"";
+		String line5 = "\"Shoemaker, Daniel Hecht\",\"Student62,5063   Artis, Makeda\"";
+		
+		String[] rostersText = {line1, line2, line3, line4, line5};
+		
+		DataConverter dc = new DataConverter();
+		dc.parseRosters(rostersText);
+		
+		dc.classIDMap = new int[8];
+		dc.classIDMap[0] = 2;
+		dc.classIDMap[1] = 3;
+		dc.classIDMap[2] = 62;
+		dc.classIDMap[3] = 1;
+		dc.classIDMap[4] = 2;
+		dc.classIDMap[5] = 3;
+		dc.classIDMap[6] = 62;
+		dc.classIDMap[7] = 1;
+		
+		dc.habitMap = new String[8];
+		dc.habitMap[0] = "Grit";
+		dc.habitMap[1] = "Grit";
+		dc.habitMap[2] = "Grit";
+		dc.habitMap[3] = "Grit";
+		dc.habitMap[4] = "Optimism";
+		dc.habitMap[5] = "Optimism";
+		dc.habitMap[6] = "Optimism";
+		dc.habitMap[7] = "Optimism";
+		
+		String dataLine1 = "\"Shoemaker, Kimberly Crandall\",History,3,4,,1,5,,,2";
+		
+		dc.parseDataLine(dataLine1);
+		
+		assertEquals(1, dc.students.get(5115).getRating("Grit", "History"));
+		assertEquals(2, dc.students.get(5115).getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get(5115).getRating("Optimism", "Science"));
+		
+		assertEquals(3, dc.students.get(5062).getRating("Grit", "History"));
+		assertEquals(5, dc.students.get(5062).getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get(5062).getRating("Optimism", "Science"));
+		
+		assertEquals(4, dc.students.get(5063).getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get(5063).getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get(5063).getRating("Optimism", "Science"));
+
+		String dataLine2 = "\"Shoemaker, Daniel Hecht\",Science,,,1,,,,2,";
+		
+		dc.parseDataLine(dataLine2);
+		
+		assertEquals(1, dc.students.get(5063).getRating("Grit", "Science"));
+		assertEquals(2, dc.students.get(5063).getRating("Optimism", "Science"));
 	}
 	
 	@Test
 	public void testParseData() {
-		//TODO Implement parseData test
-		fail("Not yet implemented");
+		String line1 = "Teacher,Student";
+		String line2 = "\"Shoemaker, Kimberly Crandall\",\"Student1,5115   Abdullah-Tucker, Ahmad\"";
+		String line3 = "\"Shoemaker, Kimberly Crandall\",\"Student2,5062   Amaya, Tatiana\"";
+		String line4 = "\"Shoemaker, Kimberly Crandall\",\"Student3,5063   Artis, Makeda\"";
+		String line5 = "\"Shoemaker, Daniel Hecht\",\"Student62,5063   Artis, Makeda\"";
+		
+		String[] rostersText = {line1, line2, line3, line4, line5};
+		
+		DataConverter dc = new DataConverter();
+		dc.parseRosters(rostersText);
+		
+		dc.classIDMap = new int[8];
+		dc.classIDMap[0] = 2;
+		dc.classIDMap[1] = 3;
+		dc.classIDMap[2] = 62;
+		dc.classIDMap[3] = 1;
+		dc.classIDMap[4] = 2;
+		dc.classIDMap[5] = 3;
+		dc.classIDMap[6] = 62;
+		dc.classIDMap[7] = 1;
+		
+		dc.habitMap = new String[8];
+		dc.habitMap[0] = "Grit";
+		dc.habitMap[1] = "Grit";
+		dc.habitMap[2] = "Grit";
+		dc.habitMap[3] = "Grit";
+		dc.habitMap[4] = "Optimism";
+		dc.habitMap[5] = "Optimism";
+		dc.habitMap[6] = "Optimism";
+		dc.habitMap[7] = "Optimism";
+		
+		Teacher t1 = dc.teachers.get("Shoemaker, Kimberly Crandall");
+		t1.subject = "History";
+		
+		String[] data = {"3", "4", "", "1", "5", "", "", "2"};
+		
+		dc.parseData(data, t1);
+		
+		assertEquals(1, dc.students.get(5115).getRating("Grit", "History"));
+		assertEquals(2, dc.students.get(5115).getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get(5115).getRating("Optimism", "Science"));
+		
+		assertEquals(3, dc.students.get(5062).getRating("Grit", "History"));
+		assertEquals(5, dc.students.get(5062).getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get(5062).getRating("Optimism", "Science"));
+		
+		assertEquals(4, dc.students.get(5063).getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get(5063).getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get(5063).getRating("Optimism", "Science"));
 	}
 }

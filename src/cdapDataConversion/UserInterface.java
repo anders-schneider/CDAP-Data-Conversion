@@ -23,6 +23,8 @@ public class UserInterface {
 		
 		String[] surveyData = load("survey data");
 		dc.parseSurveyData(surveyData);
+		
+		String[] dc.generateOutput();
 	}
 	
 	static String[] load(String desc) {

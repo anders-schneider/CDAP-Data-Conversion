@@ -43,7 +43,7 @@ public class DataConverter {
 		parseHeaders(surveyData[0]);
 		
 		for (int i = 1; i < surveyData.length; i++) {
-			if (surveyData[i] == null) break;
+			if (surveyData[i] == null) continue;
 			parseDataLine(surveyData[i]);
 		}
 	}
@@ -269,5 +269,16 @@ public class DataConverter {
 		}
 		
 		teacher.addStudent(student, student.lastInClassID);
+	}
+	
+	/**
+	 * Given the stored information from parsing a rosters file and a
+	 * survey data file, this method returns a CSV array of strings with the
+	 * aggregated results.
+	 * 
+	 * @return An array of CSV strings representing the aggregated results
+	 */
+	String[] generateOutput() {
+		return null;
 	}
 }
