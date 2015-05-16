@@ -22,7 +22,6 @@ import org.omg.CosNaming.NamingContextPackage.CannotProceed;
  */
 public class UserInterface {
 
-	//TODO Decide on error handling and appropriate error messages
 	//TODO Turn this into an executable
 	//TODO Write a readme and generate Javadocs
 	
@@ -177,6 +176,11 @@ public class UserInterface {
 		}
 	}
 	
+	/**
+	 * Displays an error message in a JOptionPane.
+	 * 
+	 * @param exceptionMsg The message associated with the exception
+	 */
 	static void displayError(String exceptionMsg) {
 		JOptionPane.showMessageDialog(null, exceptionMsg, "ERROR",
 				JOptionPane.ERROR_MESSAGE);
