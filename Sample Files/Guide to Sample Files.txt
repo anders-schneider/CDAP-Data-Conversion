@@ -1,0 +1,17 @@
+Sample 1
+No errors
+
+Sample 2
+Teacher's (Salhotra) ratings appear under the wrong in-class ID (Salhotra has no Student1 in the roster file, but ratings appear there)
+
+Sample 3
+Data file includes a non-numeric rating ("K")
+
+Sample 4
+Teacher not on the roster has ratings row
+
+Sample 5
+Student not on the roster has ratings columns
+
+Sample 6
+Student has two ratings for the same class (NOT an error)
