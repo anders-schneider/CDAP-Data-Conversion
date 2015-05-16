@@ -21,9 +21,6 @@ import org.omg.CosNaming.NamingContextPackage.CannotProceed;
  *
  */
 public class UserInterface {
-
-	//TODO Turn this into an executable
-	//TODO Write a readme and generate Javadocs
 	
 	public static void main(String[] args) {
 		DataConverter dc = new DataConverter();
