@@ -9,6 +9,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import org.omg.CORBA.UserException;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 
 /**
  * This class handles all of the input and output and interaction with the user
@@ -18,25 +22,87 @@ import javax.swing.JFileChooser;
  */
 public class UserInterface {
 
-	//TODO Generate small, sample test rosters and survey data with all imaginable snafus
 	//TODO Decide on error handling and appropriate error messages
 	//TODO Turn this into an executable
-	//TODO Write a readme and generat Javadocs
+	//TODO Write a readme and generate Javadocs
 	
 	public static void main(String[] args) {
 		DataConverter dc = new DataConverter();
 		
-		// Extract information from the rosters first
-		String[] rostersText = load("rosters");
-		dc.parseRosters(rostersText);
+		JOptionPane.showMessageDialog(null, "You'll first be prompted to select the "
+				+ "rosters file.\n\nNote that it must be a .csv file!",
+				"Welcome!",
+				JOptionPane.DEFAULT_OPTION);
 		
-		// Then parse the survey data and store the ratings
-		String[] surveyData = load("survey data");
-		dc.parseSurveyData(surveyData);
+		String[] rostersText;
 		
-		// Finally generate the output and save it to a CSV file
+		// First load the rosters file
+		while (true) {
+			try {
+				rostersText = load("rosters");
+				break;
+			} catch (IOException e) {
+				displayError(e.getMessage());
+			} catch (CannotProceed e) {
+				return;
+			}
+		}
+		
+		// Next parse the rosters file and store its information
+		try {
+			dc.parseRosters(rostersText);
+		} catch (Exception e) {
+			displayError("Error parsing the rosters file:\n\n" + e.getMessage()
+					+ "\n\nCheck the rosters file and try again.");
+			return;
+		}
+		
+		JOptionPane.showMessageDialog(null, "Great, thanks!\n\nNext you'll need to select "
+				+ "the survey data file.\n\n(This one also has to be a .csv file.)");
+		
+		String[] surveyData;
+		
+		// Then load the survey data
+		while (true) {
+			try {
+				surveyData = load("survey data");
+				break;
+			} catch (IOException e) {
+				displayError(e.getMessage());
+			} catch (CannotProceed e) {
+				return;
+			}
+		}
+		
+		// And parse the survey data
+		try{
+			dc.parseSurveyData(surveyData);
+		} catch (Exception e) {
+			displayError("Error parsing the survey data file:\n\n" + e.getMessage()
+					+ "\n\nCheck the survey data file and try again.");
+			return;
+		}
+		
+		JOptionPane.showMessageDialog(null, "Awesome - now you just need to select a "
+				+ "location to save the output to and you'll be all set!");
+		
+		// Finally generate the output
 		String[] output = dc.generateOutput();
-		saveOutput(output);
+		
+		// And save it to an output file
+		while (true) {
+			try {
+				saveOutput(output);
+				break;
+			} catch (FileNotFoundException e) {
+				displayError(e.getMessage());
+			} catch (CannotProceed e) {
+				return;
+			}
+		}
+		
+		JOptionPane.showMessageDialog(null, "You're all done!", "Success!", 
+				JOptionPane.PLAIN_MESSAGE);
 	}
 	
 	/**
@@ -46,8 +112,10 @@ public class UserInterface {
 	 * 
 	 * @param desc A string describing if the rosters should be loaded or the survey data
 	 * @return An array of strings representing the file's contents
+	 * @throws CannotProceed If the user does not select a file
+	 * @throws IOException If the file is null or is not a .csv file
 	 */
-	static String[] load(String desc) {
+	static String[] load(String desc) throws CannotProceed, IOException {
 		String[] lines = null;
 		if ("rosters".equals(desc)) lines = new String[10000]; // Capacity for up to 10,000 student-teacher pairs
 		else if ("survey data".equals(desc)) lines = new String[500]; // Capacity for up to 500 teachers
@@ -59,32 +127,31 @@ public class UserInterface {
         int result = chooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = chooser.getSelectedFile();
-            if (file != null) {
-	            try{	
-	                String fileName = file.getCanonicalPath();
-	                
-	                // Check to make sure the file is a CSV file
-	                int len = fileName.length();	                
-	                if (!".csv".equals(fileName.substring(len - 4, len))) {
-	                	// Otherwise throw an exception
-	                	throw new IOException("The selected file is not a CSV file.");
-	                }
-	                
-	                reader = new BufferedReader(new FileReader(fileName));
-	                String line;
-	                int index = 0;
-	                while ((line = reader.readLine()) != null) {
-	                    lines[index++] = line;
-	                }
-	                reader.close();
-	                return lines;
-	            } catch (IOException e) {
-	            	displayError(e.getMessage());
-	            	load(desc);
-	            }
+            if (file != null) {	
+                String fileName = file.getCanonicalPath();
+                
+                // Check to make sure the file is a CSV file
+                int len = fileName.length();	                
+                if (!".csv".equals(fileName.substring(len - 4, len))) {
+                	// Otherwise throw an exception
+                	throw new IOException("The selected file is not a .csv file. Try again!");
+                }
+                
+                reader = new BufferedReader(new FileReader(fileName));
+                String line;
+                int index = 0;
+                while ((line = reader.readLine()) != null) {
+                    lines[index++] = line;
+                }
+                reader.close();
+                return lines;
+            } else {
+            	throw new IOException("Whoops! Something went wrong trying "
+            			+ "to open that file. Check the file and try again!");
             }
+        } else {
+        	throw new CannotProceed();
         }
-        return lines;
 	}
 	
 	/**
@@ -92,26 +159,27 @@ public class UserInterface {
 	 * with a JFileChooser.
 	 * 
 	 * @param output An array of strings representing lines of the output
+	 * @throws FileNotFoundException If no file is found
+	 * @throws CannotProceed If the user closes the save file dialog
 	 */
-	static void saveOutput(String[] output) {
+	static void saveOutput(String[] output) throws FileNotFoundException, CannotProceed {
 		JFileChooser chooser = new JFileChooser();
 		
 		int response = chooser.showSaveDialog(null);
 		if (response == JFileChooser.APPROVE_OPTION) {
-			try {
-				PrintWriter stream = new PrintWriter(chooser.getSelectedFile());
-				for (String line : output) {
-					stream.println(line);
-				}
-				stream.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+			PrintWriter stream = new PrintWriter(chooser.getSelectedFile());
+			for (String line : output) {
+				stream.println(line);
 			}
+			stream.close();
+		} else {
+			throw new CannotProceed();
 		}
 	}
 	
 	static void displayError(String exceptionMsg) {
-		System.out.println(exceptionMsg);
+		JOptionPane.showMessageDialog(null, exceptionMsg, "ERROR",
+				JOptionPane.ERROR_MESSAGE);
 	}
 
 }

@@ -23,7 +23,7 @@ import java.util.Set;
  */
 public class DataConverter {
 	
-	HashMap<Integer, Student> students;
+	HashMap<String, Student> students;
 	HashMap<String, Teacher> teachers;
 	
 	HashSet<String> habits;
@@ -36,7 +36,7 @@ public class DataConverter {
 	 * Constructor for the DataConverter type.
 	 */
 	public DataConverter() {
-		students = new HashMap<Integer, Student>();
+		students = new HashMap<String, Student>();
 		teachers = new HashMap<String, Teacher>();
 		
 		habits = new HashSet<String>();
@@ -54,7 +54,7 @@ public class DataConverter {
 		
 		for (int i = 1; i < surveyData.length; i++) {
 			if (surveyData[i] == null) continue;
-			parseDataLine(surveyData[i]);
+			parseDataLine(surveyData[i], i);
 		}
 	}
 	
@@ -63,12 +63,14 @@ public class DataConverter {
 	 * information.
 	 * 
 	 * @param line A line of the survey data
+	 * @param lineNo The line number
 	 */
-	void parseDataLine(String line) {
+	void parseDataLine(String line, int lineNo) {
 		
 		int start, stop;
 		
-		if (line.charAt(0) != '"') throw new MissingFormatArgumentException("Was expecting \"Teacher name\", ...");
+		if (line.charAt(0) != '"') throw new MissingFormatArgumentException(
+						"Line number " + lineNo + "doesn't start with double quotes");
 		
 		start = 1;
 		stop = start;
@@ -78,7 +80,8 @@ public class DataConverter {
 		String teacherName = line.substring(start, stop);
 		
 		// Retrieve the specified teacher
-		if (!teachers.containsKey(teacherName)) throw new IllegalArgumentException("The following teacher was not included in the rosters: " + teacherName);
+		if (!teachers.containsKey(teacherName)) throw new IllegalArgumentException(
+				"The following teacher was not included in the rosters: " + teacherName);
 		Teacher teacher = teachers.get(teacherName);
 		
 		start = stop;
@@ -124,9 +127,18 @@ public class DataConverter {
 			
 			// Use the in-class ID map to retrieve the correct student for this column
 			int inClassID = classIDMap[i];
+			if (teacher.getStudent(inClassID) == null) throw new IllegalArgumentException(
+					teacher.name + " (teacher) does not have a Student" + inClassID);
 			Student student = teacher.getStudent(inClassID);
 			
-			int rating = Integer.parseInt(data[i]);
+			int rating;
+			
+			try {
+				rating = Integer.parseInt(data[i]);
+			} catch (NumberFormatException e) {
+				throw new NumberFormatException("Found a non-numeric rating '"
+						+ data[i] + "' in the rating row for " + teacher.name);
+			}
 			
 			student.setRating(habit, teacher.subject, rating);
 		}
@@ -245,8 +257,7 @@ public class DataConverter {
 		while (sLine.charAt(stop) != ' ') stop++;
 		
 		// Extract the student's overall ID number
-		String idNum = sLine.substring(start, stop);
-		int id = Integer.parseInt(idNum);
+		String id = sLine.substring(start, stop);
 		
 		Student student;
 		

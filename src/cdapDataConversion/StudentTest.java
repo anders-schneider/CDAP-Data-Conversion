@@ -8,7 +8,7 @@ public class StudentTest {
 
 	@Test
 	public void test() {
-		Student s1 = new Student(1234);
+		Student s1 = new Student("1234");
 		
 		s1.setRating("Grit", "Math", 4);
 		s1.setRating("Self-Control", "Science", 5);

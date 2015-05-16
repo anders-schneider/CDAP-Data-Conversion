@@ -14,4 +14,4 @@ Sample 5
 Student not on the roster has ratings columns
 
 Sample 6
-Student has two ratings for the same class (NOT an error)
+Student has two ratings for the same subject (NOT an error)

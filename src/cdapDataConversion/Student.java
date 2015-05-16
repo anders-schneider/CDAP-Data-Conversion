@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class Student implements Comparable {
 
-	int id;
+	String id;
 	private HashMap<String, HashMap<String, Integer>> ratings;
 	int lastInClassID; // Holds on to this information to be stored in its Teacher
 	
@@ -21,7 +21,7 @@ public class Student implements Comparable {
 	 * 
 	 * @param id This student's unique student ID.
 	 */
-	public Student(int id) {
+	public Student(String id) {
 		this.id = id;
 		ratings = new HashMap<String, HashMap<String, Integer>>();
 	}
@@ -84,6 +84,6 @@ public class Student implements Comparable {
 	@Override
 	public int compareTo(Object arg0) {
 		Student other = (Student) arg0;
-		return this.id - other.id;
+		return Integer.parseInt(this.id) - Integer.parseInt(other.id);
 	}
 }

@@ -53,7 +53,7 @@ public class DataConverterTest {
 		assertNotNull(t1.getStudent(1));
 		
 		Student ahmad = t1.getStudent(1);
-		assertEquals(5115, ahmad.id);
+		assertEquals("5115", ahmad.id);
 		
 		dc.parseRosterLine(line2);
 		dc.parseRosterLine(line3);
@@ -63,7 +63,7 @@ public class DataConverterTest {
 		assertNotNull(t1.getStudent(2));
 		
 		Student tatiana = t1.getStudent(2);
-		assertEquals(5062, tatiana.id);
+		assertEquals("5062", tatiana.id);
 	}
 
 	@Test
@@ -73,20 +73,20 @@ public class DataConverterTest {
 		String line1 = "Student1,5115   Abdullah-Tucker, Ahmad";
 		dc.parseStudent(line1);
 		
-		assertTrue(dc.students.containsKey(5115));
-		assertEquals(1, dc.students.get(5115).lastInClassID);
+		assertTrue(dc.students.containsKey("5115"));
+		assertEquals(1, dc.students.get("5115").lastInClassID);
 		
 		String line2 = "Student17, 3032   Andy Schneider";
 		dc.parseStudent(line2);
 		
-		assertTrue(dc.students.containsKey(3032));
-		assertEquals(17, dc.students.get(3032).lastInClassID);
+		assertTrue(dc.students.containsKey("3032"));
+		assertEquals(17, dc.students.get("3032").lastInClassID);
 		
 		String line3 = "Student0, 30312   Andy Schneider";
 		dc.parseStudent(line3);
 		
-		assertTrue(dc.students.containsKey(30312));
-		assertEquals(0, dc.students.get(30312).lastInClassID);		
+		assertTrue(dc.students.containsKey("30312"));
+		assertEquals(0, dc.students.get("30312").lastInClassID);		
 	}
 
 	@Test
@@ -205,33 +205,33 @@ public class DataConverterTest {
 		
 		String[] surveyData = {fullHeader, dataLine1, null, dataLine2, null};
 		
-		assertEquals(-1, dc.students.get(5115).getRating("Grit", "History"));
-		assertEquals(-1, dc.students.get(5115).getRating("Gratitude", "History"));
-		assertEquals(-1, dc.students.get(5115).getRating("Gratitude", "Science"));
+		assertEquals(-1, dc.students.get("5115").getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get("5115").getRating("Gratitude", "History"));
+		assertEquals(-1, dc.students.get("5115").getRating("Gratitude", "Science"));
 		
-		assertEquals(-1, dc.students.get(5062).getRating("Grit", "History"));
-		assertEquals(-1, dc.students.get(5062).getRating("Gratitude", "History"));
-		assertEquals(-1, dc.students.get(5062).getRating("Gratitude", "Science"));
+		assertEquals(-1, dc.students.get("5062").getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get("5062").getRating("Gratitude", "History"));
+		assertEquals(-1, dc.students.get("5062").getRating("Gratitude", "Science"));
 		
-		assertEquals(-1, dc.students.get(5063).getRating("Grit", "History"));
-		assertEquals(-1, dc.students.get(5063).getRating("Gratitude", "History"));
-		assertEquals(-1, dc.students.get(5063).getRating("Grit", "Science"));
-		assertEquals(-1, dc.students.get(5063).getRating("Gratitude", "Science"));
+		assertEquals(-1, dc.students.get("5063").getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get("5063").getRating("Gratitude", "History"));
+		assertEquals(-1, dc.students.get("5063").getRating("Grit", "Science"));
+		assertEquals(-1, dc.students.get("5063").getRating("Gratitude", "Science"));
 		
 		dc.parseSurveyData(surveyData);
 		
-		assertEquals(1, dc.students.get(5115).getRating("Grit", "History"));
-		assertEquals(2, dc.students.get(5115).getRating("Gratitude", "History"));
-		assertEquals(-1, dc.students.get(5115).getRating("Gratitude", "Science"));
+		assertEquals(1, dc.students.get("5115").getRating("Grit", "History"));
+		assertEquals(2, dc.students.get("5115").getRating("Gratitude", "History"));
+		assertEquals(-1, dc.students.get("5115").getRating("Gratitude", "Science"));
 		
-		assertEquals(3, dc.students.get(5062).getRating("Grit", "History"));
-		assertEquals(5, dc.students.get(5062).getRating("Gratitude", "History"));
-		assertEquals(-1, dc.students.get(5062).getRating("Gratitude", "Science"));
+		assertEquals(3, dc.students.get("5062").getRating("Grit", "History"));
+		assertEquals(5, dc.students.get("5062").getRating("Gratitude", "History"));
+		assertEquals(-1, dc.students.get("5062").getRating("Gratitude", "Science"));
 		
-		assertEquals(4, dc.students.get(5063).getRating("Grit", "History"));
-		assertEquals(-1, dc.students.get(5063).getRating("Gratitude", "History"));
-		assertEquals(1, dc.students.get(5063).getRating("Grit", "Science"));
-		assertEquals(2, dc.students.get(5063).getRating("Gratitude", "Science"));
+		assertEquals(4, dc.students.get("5063").getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get("5063").getRating("Gratitude", "History"));
+		assertEquals(1, dc.students.get("5063").getRating("Grit", "Science"));
+		assertEquals(2, dc.students.get("5063").getRating("Gratitude", "Science"));
 	}
 	
 	@Test
@@ -269,26 +269,26 @@ public class DataConverterTest {
 		
 		String dataLine1 = "\"Shoemaker, Kimberly Crandall\",History,3,4,,1,5,,,2";
 		
-		dc.parseDataLine(dataLine1);
+		dc.parseDataLine(dataLine1, 1);
 		
-		assertEquals(1, dc.students.get(5115).getRating("Grit", "History"));
-		assertEquals(2, dc.students.get(5115).getRating("Optimism", "History"));
-		assertEquals(-1, dc.students.get(5115).getRating("Optimism", "Science"));
+		assertEquals(1, dc.students.get("5115").getRating("Grit", "History"));
+		assertEquals(2, dc.students.get("5115").getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get("5115").getRating("Optimism", "Science"));
 		
-		assertEquals(3, dc.students.get(5062).getRating("Grit", "History"));
-		assertEquals(5, dc.students.get(5062).getRating("Optimism", "History"));
-		assertEquals(-1, dc.students.get(5062).getRating("Optimism", "Science"));
+		assertEquals(3, dc.students.get("5062").getRating("Grit", "History"));
+		assertEquals(5, dc.students.get("5062").getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get("5062").getRating("Optimism", "Science"));
 		
-		assertEquals(4, dc.students.get(5063).getRating("Grit", "History"));
-		assertEquals(-1, dc.students.get(5063).getRating("Optimism", "History"));
-		assertEquals(-1, dc.students.get(5063).getRating("Optimism", "Science"));
+		assertEquals(4, dc.students.get("5063").getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get("5063").getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get("5063").getRating("Optimism", "Science"));
 
 		String dataLine2 = "\"Shoemaker, Daniel Hecht\",Science,,,1,,,,2,";
 		
-		dc.parseDataLine(dataLine2);
+		dc.parseDataLine(dataLine2, 2);
 		
-		assertEquals(1, dc.students.get(5063).getRating("Grit", "Science"));
-		assertEquals(2, dc.students.get(5063).getRating("Optimism", "Science"));
+		assertEquals(1, dc.students.get("5063").getRating("Grit", "Science"));
+		assertEquals(2, dc.students.get("5063").getRating("Optimism", "Science"));
 	}
 	
 	@Test
@@ -331,17 +331,17 @@ public class DataConverterTest {
 		
 		dc.parseData(data, t1);
 		
-		assertEquals(1, dc.students.get(5115).getRating("Grit", "History"));
-		assertEquals(2, dc.students.get(5115).getRating("Optimism", "History"));
-		assertEquals(-1, dc.students.get(5115).getRating("Optimism", "Science"));
+		assertEquals(1, dc.students.get("5115").getRating("Grit", "History"));
+		assertEquals(2, dc.students.get("5115").getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get("5115").getRating("Optimism", "Science"));
 		
-		assertEquals(3, dc.students.get(5062).getRating("Grit", "History"));
-		assertEquals(5, dc.students.get(5062).getRating("Optimism", "History"));
-		assertEquals(-1, dc.students.get(5062).getRating("Optimism", "Science"));
+		assertEquals(3, dc.students.get("5062").getRating("Grit", "History"));
+		assertEquals(5, dc.students.get("5062").getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get("5062").getRating("Optimism", "Science"));
 		
-		assertEquals(4, dc.students.get(5063).getRating("Grit", "History"));
-		assertEquals(-1, dc.students.get(5063).getRating("Optimism", "History"));
-		assertEquals(-1, dc.students.get(5063).getRating("Optimism", "Science"));
+		assertEquals(4, dc.students.get("5063").getRating("Grit", "History"));
+		assertEquals(-1, dc.students.get("5063").getRating("Optimism", "History"));
+		assertEquals(-1, dc.students.get("5063").getRating("Optimism", "Science"));
 	}
 	
 	@Test
@@ -364,7 +364,7 @@ public class DataConverterTest {
 		String[] habitArr = {"Grit", "Gratitude"};
 		String[] subjArr = {"Science", "History", "Math"};
 		
-		Student s1 = new Student(1234);
+		Student s1 = new Student("1234");
 		s1.setRating("Grit", "Science", 3);
 		s1.setRating("Grit", "History", 4);
 		s1.setRating("Grit", "Math", 2);
@@ -389,7 +389,7 @@ public class DataConverterTest {
 		String header = "Student ID,Gratitude-Science,Gratitude-History,Gratitude-Math,"
 				+ "Grit-Science,Grit-History,Grit-Math";
 		
-		Student s1 = new Student(1234);
+		Student s1 = new Student("1234");
 		s1.setRating("Grit", "Science", 3);
 		s1.setRating("Grit", "History", 4);
 		s1.setRating("Grit", "Math", 2);
@@ -397,9 +397,9 @@ public class DataConverterTest {
 		
 		String line1 = "1234,,,1,3,4,2";
 		
-		dc.students.put(1234, s1);
+		dc.students.put("1234", s1);
 		
-		Student s2 = new Student(2345);
+		Student s2 = new Student("2345");
 		s2.setRating("Grit", "History", 5);
 		s2.setRating("Grit", "Science", 5);
 		s2.setRating("Gratitude", "Math", 5);
@@ -407,7 +407,7 @@ public class DataConverterTest {
 		
 		String line2 = "2345,5,,5,5,5,";
 		
-		dc.students.put(2345, s2);
+		dc.students.put("2345", s2);
 		
 		String[] expected = {header, line1, line2};
 		
